@@ -26,6 +26,6 @@ public:
 
 private:
 
-	float reachDistance = 50.0f;
+	float reachDistance = 100.0f;
 	
 };

@@ -21,25 +21,29 @@ void UOpenDoor::BeginPlay()
 {
 	Super::BeginPlay();
 
+	Owner = GetOwner();
+	currentDoorState = DoorState::CLOSED;
+
 	APlayerController* playerController = GetWorld()->GetFirstPlayerController();
 	if (playerController) {
 		TriggerActor = playerController->GetPawn();
-	}
+	}	
 
 }
 
 void UOpenDoor::OpenDoor() {
 
-	AActor* Owner = GetOwner();
-	FRotator openRotation = FRotator(0.0f, openAngle, 0.0f);
-	Owner->SetActorRotation(openRotation);
+	FRotator OpenRotation = FRotator(0.0f, OpenAngle, 0.0f);
+	Owner->SetActorRotation(OpenRotation);
+	currentDoorState = DoorState::OPEN;
+	LastDoorOpenTime = GetWorld()->GetTimeSeconds();
 }
 
 void UOpenDoor::CloseDoor() {
 
-	AActor* Owner = GetOwner();
-	FRotator openRotation = FRotator(0.0f, 0.0f, 0.0f);
-	Owner->SetActorRotation(openRotation);
+	FRotator CloseRotation = FRotator(0.0f, 0.0f, 0.0f);
+	Owner->SetActorRotation(CloseRotation);
+	currentDoorState = DoorState::CLOSED;
 }
 
 // Called every frame
@@ -47,7 +51,9 @@ void UOpenDoor::TickComponent(float DeltaTime, ELevelTick TickType, FActorCompon
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
+	// Check if the door is currently closed, there is a registered pressure plate, and is the player stood on the pressure plate.
 	if (PressurePlate && PressurePlate->IsOverlappingActor(TriggerActor)) { OpenDoor(); }
-	if (PressurePlate && !PressurePlate->IsOverlappingActor(TriggerActor)) { CloseDoor(); }
+	// Check if the door is currently open, there is a registered pressure plate, the player is not stood on the pressure plate, and the delay time has run out.
+	if ((currentDoorState == DoorState::OPEN) && PressurePlate && !PressurePlate->IsOverlappingActor(TriggerActor) && (GetWorld()->GetTimeSeconds() - LastDoorOpenTime > CloseDoorDelay)) { CloseDoor(); }
 }
 

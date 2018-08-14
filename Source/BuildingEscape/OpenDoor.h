@@ -12,7 +12,7 @@ UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class BUILDINGESCAPE_API UOpenDoor : public UActorComponent
 {
 	GENERATED_BODY()
-
+		
 public:	
 	// Sets default values for this component's properties
 	UOpenDoor();
@@ -30,12 +30,21 @@ public:
 private:
 
 	UPROPERTY(editAnywhere)
-	float openAngle = 80.0f;
+	float OpenAngle = 80.0f;
 
 	UPROPERTY(editAnywhere)
 	ATriggerVolume* PressurePlate;
 
 	UPROPERTY(editAnywhere)
 	AActor* TriggerActor;
-			
+
+	UPROPERTY(editAnywhere)
+	float CloseDoorDelay = 1.f;
+
+	enum DoorState { OPEN, CLOSED };
+
+	float LastDoorOpenTime;
+	AActor* Owner;
+	DoorState currentDoorState = DoorState::CLOSED;
+				
 };

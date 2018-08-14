@@ -1,0 +1,12 @@
+# Visual Studio Generated Files
+.vs
+
+# UE4 Generated Files
+Build
+Binaries
+DerivedDataCache
+Intermediate
+Saved
+
+# UE4 Redownloadable Assets
+Content/StarterContent/

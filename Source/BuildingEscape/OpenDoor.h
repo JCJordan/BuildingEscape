@@ -16,6 +16,8 @@ class BUILDINGESCAPE_API UOpenDoor : public UActorComponent
 public:	
 	// Sets default values for this component's properties
 	UOpenDoor();
+	void OpenDoor();
+	void CloseDoor();
 
 protected:
 	// Called when the game starts
@@ -32,5 +34,8 @@ private:
 
 	UPROPERTY(editAnywhere)
 	ATriggerVolume* PressurePlate;
+
+	UPROPERTY(editAnywhere)
+	AActor* TriggerActor;
 			
 };

@@ -4,6 +4,7 @@
 #include "Gameframework/Actor.h"
 #include "GameFramework/PlayerController.h"
 #include "Engine/World.h"
+#include "Components/InputComponent.h"
 #include "DrawDebugHelpers.h"
 
 #define OUT
@@ -29,6 +30,13 @@ void UGrabber::BeginPlay()
 	PhysicsHandle = GetOwner()->FindComponentByClass<UPhysicsHandleComponent>();
 	if (!PhysicsHandle) { UE_LOG(LogTemp, Error, TEXT("Physics handle component not found on %s"), *(GetOwner()->GetName())) }
 
+	InputComponent = GetOwner()->FindComponentByClass<UInputComponent>();
+	if (InputComponent) { 
+		InputComponent->BindAction("Grab", IE_Pressed, this, &UGrabber::Grab);
+		InputComponent->BindAction("Grab", IE_Released, this, &UGrabber::Release);
+	}
+	else { UE_LOG(LogTemp, Error, TEXT("Input component not found on %s"), *(GetOwner()->GetName())) }
+
 }
 
 
@@ -36,14 +44,21 @@ void UGrabber::BeginPlay()
 void UGrabber::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
+	
+	//UE_LOG(LogTemp, Warning, TEXT("Player View is from %s and is %s"), *(ViewLocation.ToString()), *(ViewRotation.ToString()))
+	AActor* GrabItem;
+	GrabItem = GrabCheck();	
+
+}
+
+AActor* UGrabber::GrabCheck() {
 
 	FVector ViewLocation;
-	FRotator ViewRotation;	
+	FRotator ViewRotation;
 	GetWorld()->GetFirstPlayerController()->GetPlayerViewPoint(OUT ViewLocation, OUT ViewRotation);
 	FVector ViewTraceEnd = ViewLocation + (ViewRotation.Vector() * reachDistance);
-	//UE_LOG(LogTemp, Warning, TEXT("Player View is from %s and is %s"), *(ViewLocation.ToString()), *(ViewRotation.ToString()))
 
-	DrawDebugLine(GetWorld(), ViewLocation, ViewTraceEnd, FColor(0,0,0), false, 0.0f, 0.f, 5.0f);
+	DrawDebugLine(GetWorld(), ViewLocation, ViewTraceEnd, FColor(0, 0, 0), false, 0.0f, 0.f, 5.0f);
 
 	FHitResult HitObject;
 	FCollisionQueryParams TraceParams(FName(TEXT("")), false, GetOwner());
@@ -51,7 +66,19 @@ void UGrabber::TickComponent(float DeltaTime, ELevelTick TickType, FActorCompone
 	AActor* HitActor = HitObject.GetActor();
 	if (HitActor) {
 		UE_LOG(LogTemp, Warning, TEXT("Actor hit by line trace: %s"), *HitActor->GetName())
+		return HitActor;
 	}
+	return nullptr;
 
+}
+
+void UGrabber::Grab() {
+
+	return;
+}
+
+void UGrabber::Release() {
+
+	return;
 }
 

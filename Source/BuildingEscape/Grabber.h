@@ -30,5 +30,10 @@ private:
 	float reachDistance = 100.0f;
 
 	UPhysicsHandleComponent* PhysicsHandle = nullptr;
+	UInputComponent* InputComponent = nullptr;
+
+	void Grab();
+	void Release();
+	AActor* GrabCheck();
 	
 };

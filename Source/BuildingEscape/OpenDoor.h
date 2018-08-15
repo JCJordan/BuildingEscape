@@ -20,7 +20,8 @@ public:
 	UOpenDoor();
 	void OpenDoor();
 	void CloseDoor();
-	void SetTriggerActor();
+	float GetTotalWeightOnPlate();
+	float GetTriggerWeight();
 
 protected:
 	// Called when the game starts
@@ -40,15 +41,13 @@ private:
 	UPROPERTY(editAnywhere)
 	ATriggerVolume* PressurePlate;
 
-	/** Actor that PressurePlate (Trigger volume) will detect */
-	UPROPERTY(editAnywhere)
-	AActor* TriggerActor;
-
 	/** Time after TriggerActor leaves PressurePlate connected door will stay open for (in seconds) */
 	UPROPERTY(editAnywhere)
 	float CloseDoorDelay = 1.f;
 
-
+	/** Mass required to activate PressurePlate under normal gravity (in kg) */
+	UPROPERTY(editInstanceOnly)
+	float TriggerMass = 50.0f;
 
 	float LastDoorOpenTime;
 	AActor* Owner;

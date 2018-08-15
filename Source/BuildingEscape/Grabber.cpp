@@ -9,8 +9,6 @@
 #include "PhysicsEngine/PhysicsHandleComponent.h"
 #include "DrawDebugHelpers.h"
 
-#define OUT
-
 // Sets default values for this component's properties
 UGrabber::UGrabber()
 {
@@ -40,7 +38,10 @@ void UGrabber::TickComponent(float DeltaTime, ELevelTick TickType, FActorCompone
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 	
 	//UE_LOG(LogTemp, Warning, TEXT("Player View is from %s and is %s"), *(ViewLocation.ToString()), *(ViewRotation.ToString()))
-	InteractCheck();
+	if (!IsGrabbing) {
+		InteractCheck();
+	}
+	else { UpdateGrabLocation(); }
 	
 	if (PhysicsHandle->GrabbedComponent) {
 		// Move Grabbed item
@@ -49,13 +50,15 @@ void UGrabber::TickComponent(float DeltaTime, ELevelTick TickType, FActorCompone
 
 }
 
-// Check for any interactable objects and mark if found.
+// Check for any interactable objects and set & mark if found.
 void UGrabber::InteractCheck() {
 
 	FVector GrabTraceStart, GrabTraceEnd;
 	GetGrabTraceStartAndEnd(OUT GrabTraceStart, OUT GrabTraceEnd);
 
+	/// TODO Extend to any interactable objects and act accordingly.
 	FCollisionQueryParams TraceParams(FName(TEXT("")), false, GetOwner());
+	//DrawDebugLine(GetWorld(), GrabTraceStart, GrabTraceEnd, FColor(0,0,0), false, 0.f, 0.f, 10.f);
 	GetWorld()->LineTraceSingleByObjectType(OUT InteractObject, GrabTraceStart, GrabTraceEnd, FCollisionObjectQueryParams(ECollisionChannel::ECC_PhysicsBody), TraceParams);
 
 	if (InteractObject.GetActor()) {
@@ -75,7 +78,20 @@ void UGrabber::GetGrabTraceStartAndEnd(OUT FVector& GrabTraceStart, OUT FVector&
 
 	GrabTraceStart = ViewLocation;
 	GrabTraceEnd = ViewLocation + (ViewRotation.Vector() * reachDistance);
+	
 	return;
+}
+
+// Update location where currently 'grabbed' item is held
+void UGrabber::UpdateGrabLocation() {
+
+	FVector ViewLocation;
+	FRotator ViewRotation;
+	GetWorld()->GetFirstPlayerController()->GetPlayerViewPoint(OUT ViewLocation, OUT ViewRotation);
+
+	GrabLocation = ViewLocation + (ViewRotation.Vector() * reachDistance);
+	return;
+
 }
 
 // Pick up object within range
@@ -84,12 +100,13 @@ void UGrabber::Grab() {
 	if (InteractObject.GetActor()) {
 		UPrimitiveComponent* ComponentToGrab = InteractObject.GetComponent();
 
-		PhysicsHandle->GrabComponent(
+		PhysicsHandle->GrabComponentAtLocationWithRotation(
 			ComponentToGrab, // Component Reference
 			NAME_None, // Bone Name
 			ComponentToGrab->GetOwner()->GetActorLocation(), // Component Location
-			true // Rotation enabled?
+			ComponentToGrab->GetOwner()->GetActorRotation()
 		);
+		IsGrabbing = true;
 	}
 
 	return;
@@ -99,6 +116,7 @@ void UGrabber::Grab() {
 void UGrabber::Release() {
 
 	PhysicsHandle->ReleaseComponent();
+	IsGrabbing = false;
 	return;
 }
 

@@ -29,7 +29,9 @@ private:
 
 	/** Reach distance from actor center point */
 	UPROPERTY(editAnywhere)
-	float reachDistance = 100.0f;
+	float reachDistance = 200.0f;
+	
+	bool IsGrabbing = false;
 
 	UPhysicsHandleComponent* PhysicsHandle = nullptr;
 	UInputComponent* InputComponent = nullptr;
@@ -43,6 +45,7 @@ private:
 	void InteractCheck();
 	void FindPhysicsHandleComponent();
 	void SetupInputComponent();
-	void GetGrabTraceStartAndEnd(FVector& Start, FVector& End);
+	void GetGrabTraceStartAndEnd(OUT FVector& Start, OUT FVector& End);
+	void UpdateGrabLocation();
 	
 };

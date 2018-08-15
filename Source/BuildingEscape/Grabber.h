@@ -32,8 +32,15 @@ private:
 	UPhysicsHandleComponent* PhysicsHandle = nullptr;
 	UInputComponent* InputComponent = nullptr;
 
+	FHitResult InteractObject;
+
+	FVector GrabLocation;
+
 	void Grab();
 	void Release();
-	AActor* GrabCheck();
+	void InteractCheck();
+
+	void FindPhysicsHandleComponent();
+	void SetupInputComponent();
 	
 };

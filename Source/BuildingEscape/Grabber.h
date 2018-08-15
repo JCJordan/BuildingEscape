@@ -27,6 +27,8 @@ public:
 
 private:
 
+	/** Reach distance from actor center point */
+	UPROPERTY(editAnywhere)
 	float reachDistance = 100.0f;
 
 	UPhysicsHandleComponent* PhysicsHandle = nullptr;
@@ -39,8 +41,8 @@ private:
 	void Grab();
 	void Release();
 	void InteractCheck();
-
 	void FindPhysicsHandleComponent();
 	void SetupInputComponent();
+	void GetGrabTraceStartAndEnd(FVector& Start, FVector& End);
 	
 };

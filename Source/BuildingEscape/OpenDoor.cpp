@@ -22,13 +22,19 @@ void UOpenDoor::BeginPlay()
 	Super::BeginPlay();
 
 	Owner = GetOwner();
-	currentDoorState = DoorState::CLOSED;
+	currentDoorState = defaultDoorState;
+	SetTriggerActor();
 
+}
+
+// Set Actor that will activate pressure plate
+void UOpenDoor::SetTriggerActor() {
 	APlayerController* playerController = GetWorld()->GetFirstPlayerController();
 	if (playerController) {
 		TriggerActor = playerController->GetPawn();
-	}	
+	}
 
+	return;
 }
 
 void UOpenDoor::OpenDoor() {

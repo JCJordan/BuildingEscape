@@ -7,6 +7,8 @@
 #include "Engine/TriggerVolume.h"
 #include "OpenDoor.generated.h"
 
+UENUM()
+enum class DoorState { OPEN, CLOSED };
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class BUILDINGESCAPE_API UOpenDoor : public UActorComponent
@@ -18,6 +20,7 @@ public:
 	UOpenDoor();
 	void OpenDoor();
 	void CloseDoor();
+	void SetTriggerActor();
 
 protected:
 	// Called when the game starts
@@ -29,22 +32,30 @@ public:
 
 private:
 
+	/** How many degrees connected door will open when activated */
 	UPROPERTY(editAnywhere)
 	float OpenAngle = 80.0f;
 
+	/** Trigger Volume that will activate door opening */
 	UPROPERTY(editAnywhere)
 	ATriggerVolume* PressurePlate;
 
+	/** Actor that PressurePlate (Trigger volume) will detect */
 	UPROPERTY(editAnywhere)
 	AActor* TriggerActor;
 
+	/** Time after TriggerActor leaves PressurePlate connected door will stay open for (in seconds) */
 	UPROPERTY(editAnywhere)
 	float CloseDoorDelay = 1.f;
 
-	enum DoorState { OPEN, CLOSED };
+
 
 	float LastDoorOpenTime;
 	AActor* Owner;
-	DoorState currentDoorState = DoorState::CLOSED;
+
+	/** Starting door state */
+	UPROPERTY(editInstanceOnly)
+	DoorState defaultDoorState = DoorState::CLOSED;
+	DoorState currentDoorState;
 				
 };

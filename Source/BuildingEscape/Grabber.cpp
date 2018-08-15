@@ -52,14 +52,11 @@ void UGrabber::TickComponent(float DeltaTime, ELevelTick TickType, FActorCompone
 // Check for any interactable objects and mark if found.
 void UGrabber::InteractCheck() {
 
-	FVector ViewLocation;
-	FRotator ViewRotation;
-	GetWorld()->GetFirstPlayerController()->GetPlayerViewPoint(OUT ViewLocation, OUT ViewRotation);
-	FVector ViewTraceEnd = ViewLocation + (ViewRotation.Vector() * reachDistance);
-	GrabLocation = ViewTraceEnd;
+	FVector GrabTraceStart, GrabTraceEnd;
+	GetGrabTraceStartAndEnd(OUT GrabTraceStart, OUT GrabTraceEnd);
 
 	FCollisionQueryParams TraceParams(FName(TEXT("")), false, GetOwner());
-	GetWorld()->LineTraceSingleByObjectType(OUT InteractObject, ViewLocation, ViewTraceEnd, FCollisionObjectQueryParams(ECollisionChannel::ECC_PhysicsBody), TraceParams);
+	GetWorld()->LineTraceSingleByObjectType(OUT InteractObject, GrabTraceStart, GrabTraceEnd, FCollisionObjectQueryParams(ECollisionChannel::ECC_PhysicsBody), TraceParams);
 
 	if (InteractObject.GetActor()) {
 		// TODO Mark found object
@@ -70,6 +67,18 @@ void UGrabber::InteractCheck() {
 
 }
 
+void UGrabber::GetGrabTraceStartAndEnd(OUT FVector& GrabTraceStart, OUT FVector& GrabTraceEnd) {
+
+	FVector ViewLocation;
+	FRotator ViewRotation;
+	GetWorld()->GetFirstPlayerController()->GetPlayerViewPoint(OUT ViewLocation, OUT ViewRotation);
+
+	GrabTraceStart = ViewLocation;
+	GrabTraceEnd = ViewLocation + (ViewRotation.Vector() * reachDistance);
+	return;
+}
+
+// Pick up object within range
 void UGrabber::Grab() {
 
 	if (InteractObject.GetActor()) {
@@ -86,13 +95,14 @@ void UGrabber::Grab() {
 	return;
 }
 
+// Release held component
 void UGrabber::Release() {
 
-	// Release held component
 	PhysicsHandle->ReleaseComponent();
 	return;
 }
 
+// Check if there is a Physics Handle component and complain if not
 void UGrabber::FindPhysicsHandleComponent() {
 
 	PhysicsHandle = GetOwner()->FindComponentByClass<UPhysicsHandleComponent>();
@@ -102,6 +112,7 @@ void UGrabber::FindPhysicsHandleComponent() {
 
 }
 
+// Check if there is a Input component and complain if not
 void UGrabber::SetupInputComponent() {
 
 	InputComponent = GetOwner()->FindComponentByClass<UInputComponent>();
@@ -114,4 +125,3 @@ void UGrabber::SetupInputComponent() {
 	return;
 
 }
-

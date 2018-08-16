@@ -39,7 +39,7 @@ private:
 
 	/** Trigger Volume that will activate door opening */
 	UPROPERTY(editAnywhere)
-	ATriggerVolume* PressurePlate;
+	ATriggerVolume* PressurePlate = nullptr;
 
 	/** Time after TriggerActor leaves PressurePlate connected door will stay open for (in seconds) */
 	UPROPERTY(editAnywhere)
@@ -50,7 +50,7 @@ private:
 	float TriggerMass = 50.0f;
 
 	float LastDoorOpenTime;
-	AActor* Owner;
+	AActor* Owner = nullptr;
 
 	/** Starting door state */
 	UPROPERTY(editInstanceOnly)

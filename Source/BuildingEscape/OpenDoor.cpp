@@ -24,23 +24,32 @@ void UOpenDoor::BeginPlay()
 	Super::BeginPlay();
 
 	Owner = GetOwner();
+	if (!Owner) { UE_LOG(LogTemp, Error, TEXT("Owner not found in Open Door component!")); return; }
+	if (!PressurePlate) { UE_LOG(LogTemp, Error, TEXT("PressurePlate not found on %s!"), *(GetOwner()->GetName())); return; }
 	currentDoorState = defaultDoorState;
 
 }
 
 void UOpenDoor::OpenDoor() {
 
+	if (!Owner) { return; }
 	FRotator OpenRotation = FRotator(0.0f, OpenAngle, 0.0f);
 	Owner->SetActorRotation(OpenRotation);
 	currentDoorState = DoorState::OPEN;
 	LastDoorOpenTime = GetWorld()->GetTimeSeconds();
+
+	return; 
+
 }
 
 void UOpenDoor::CloseDoor() {
 
+	if (!Owner) { return; }
 	FRotator CloseRotation = FRotator(0.0f, 0.0f, 0.0f);
 	Owner->SetActorRotation(CloseRotation);
 	currentDoorState = DoorState::CLOSED;
+
+	return; 
 }
 
 // Gets total weight on pressure plate under 'current' gravity
@@ -48,6 +57,8 @@ float UOpenDoor::GetTotalWeightOnPlate() {
 
 	TArray<AActor*> OverlappingActors;
 	float TotalMassOnPlate = 0.0f;
+
+	if (!PressurePlate) { return TotalMassOnPlate; }
 	PressurePlate->GetOverlappingActors(OUT OverlappingActors);
 	for (const AActor* Actor : OverlappingActors) {
 		TotalMassOnPlate += Actor->FindComponentByClass<UPrimitiveComponent>()->GetMass();
@@ -68,6 +79,7 @@ void UOpenDoor::TickComponent(float DeltaTime, ELevelTick TickType, FActorCompon
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
+	if (!PressurePlate) { return; }
 	// Check if the door is currently closed, there is a registered pressure plate, and is the player stood on the pressure plate.
 	if (PressurePlate && (GetTotalWeightOnPlate() >= GetTriggerWeight())) { OpenDoor(); }
 	// Check if the door is currently open, there is a registered pressure plate, the player is not stood on the pressure plate, and the delay time has run out.

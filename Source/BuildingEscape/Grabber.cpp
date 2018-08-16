@@ -43,6 +43,7 @@ void UGrabber::TickComponent(float DeltaTime, ELevelTick TickType, FActorCompone
 	}
 	else { UpdateGrabLocation(); }
 	
+	if (!PhysicsHandle) { return; }
 	if (PhysicsHandle->GrabbedComponent) {
 		// Move Grabbed item
 		PhysicsHandle->SetTargetLocation(GrabLocation);
@@ -100,6 +101,7 @@ void UGrabber::Grab() {
 	if (InteractObject.GetActor()) {
 		UPrimitiveComponent* ComponentToGrab = InteractObject.GetComponent();
 
+		if (!PhysicsHandle) { return; }
 		PhysicsHandle->GrabComponentAtLocationWithRotation(
 			ComponentToGrab, // Component Reference
 			NAME_None, // Bone Name
@@ -115,6 +117,7 @@ void UGrabber::Grab() {
 // Release held component
 void UGrabber::Release() {
 
+	if (!PhysicsHandle) { return; }
 	PhysicsHandle->ReleaseComponent();
 	IsGrabbing = false;
 	return;

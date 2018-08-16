@@ -7,10 +7,7 @@
 #include "Engine/TriggerVolume.h"
 #include "OpenDoor.generated.h"
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnOpenRequest);
-
-UENUM()
-enum class DoorState { OPEN, CLOSED };
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FDoorEvent);
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class BUILDINGESCAPE_API UOpenDoor : public UActorComponent
@@ -20,13 +17,14 @@ class BUILDINGESCAPE_API UOpenDoor : public UActorComponent
 public:	
 	// Sets default values for this component's properties
 	UOpenDoor();
-	void OpenDoor();
-	void CloseDoor();
 	float GetTotalWeightOnPlate();
 	float GetTriggerWeight();
 
 	UPROPERTY(BlueprintAssignable)
-	FOnOpenRequest OnOpenRequest;
+	FDoorEvent OnOpen;
+
+	UPROPERTY(BlueprintAssignable)
+	FDoorEvent OnClose;
 
 protected:
 	// Called when the game starts
@@ -38,28 +36,14 @@ public:
 
 private:
 
-	/** How many degrees connected door will open when activated */
-	UPROPERTY(editAnywhere)
-	float OpenAngle = 80.0f;
-
 	/** Trigger Volume that will activate door opening */
 	UPROPERTY(editAnywhere)
 	ATriggerVolume* PressurePlate = nullptr;
-
-	/** Time after TriggerActor leaves PressurePlate connected door will stay open for (in seconds) */
-	UPROPERTY(editAnywhere)
-	float CloseDoorDelay = 1.f;
 
 	/** Mass required to activate PressurePlate under normal gravity (in kg) */
 	UPROPERTY(editInstanceOnly)
 	float TriggerMass = 50.0f;
 
-	float LastDoorOpenTime;
 	AActor* Owner = nullptr;
-
-	/** Starting door state */
-	UPROPERTY(editInstanceOnly)
-	DoorState defaultDoorState = DoorState::CLOSED;
-	DoorState currentDoorState;
 				
 };

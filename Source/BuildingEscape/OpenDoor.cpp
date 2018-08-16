@@ -32,9 +32,10 @@ void UOpenDoor::BeginPlay()
 
 void UOpenDoor::OpenDoor() {
 
-	if (!Owner) { return; }
-	FRotator OpenRotation = FRotator(0.0f, OpenAngle, 0.0f);
-	Owner->SetActorRotation(OpenRotation);
+	//if (!Owner) { return; }
+	//FRotator OpenRotation = FRotator(0.0f, OpenAngle, 0.0f);
+	//Owner->SetActorRotation(OpenRotation);
+	OnOpenRequest.Broadcast();
 	currentDoorState = DoorState::OPEN;
 	LastDoorOpenTime = GetWorld()->GetTimeSeconds();
 

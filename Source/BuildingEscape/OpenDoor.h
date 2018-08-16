@@ -7,6 +7,8 @@
 #include "Engine/TriggerVolume.h"
 #include "OpenDoor.generated.h"
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnOpenRequest);
+
 UENUM()
 enum class DoorState { OPEN, CLOSED };
 
@@ -22,6 +24,9 @@ public:
 	void CloseDoor();
 	float GetTotalWeightOnPlate();
 	float GetTriggerWeight();
+
+	UPROPERTY(BlueprintAssignable)
+	FOnOpenRequest OnOpenRequest;
 
 protected:
 	// Called when the game starts

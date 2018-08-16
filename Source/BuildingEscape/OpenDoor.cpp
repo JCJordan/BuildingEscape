@@ -56,6 +56,7 @@ void UOpenDoor::TickComponent(float DeltaTime, ELevelTick TickType, FActorCompon
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
+	/// TODO Avoid polling every tick
 	if (!PressurePlate) { return; }
 	// Check if weight on pressure plate is sufficient to trigger.
 	if (GetTotalWeightOnPlate() >= GetTriggerWeight()) { OnOpen.Broadcast(); }
